@@ -264,6 +264,9 @@ h2{font-family:var(--disp);font-weight:400;font-size:clamp(28px,4vw,44px);letter
 .mcal-row .ct{font-size:12.5px;color:var(--muted)}
 .mcal-row .cdays{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-align:right;text-transform:uppercase}
 .mcal-row.soon .cdays{color:var(--brass-bright)}
+.mcal-row.milestone .cn{font-weight:700;color:var(--brass-bright)}
+.mcal-row.milestone .ct{font-weight:700;color:var(--bone)}
+.mcal-row.milestone .cd{font-weight:700}
 @media(max-width:700px){
   .mcal-row{grid-template-columns:90px 1fr;grid-template-rows:auto auto;row-gap:2px}
   .mcal-row .cdays{text-align:left}
@@ -660,20 +663,25 @@ document.getElementById("chairsList").innerHTML = CONFIG.formaend.map(f=>`
   <div class="chair-item"><span class="yr">${f.periode}</span>
   <span class="cn ${f.navn.startsWith('XYZ')?'tbd':''}">${f.navn}</span></div>`).join("");
 
-/* Mærkedagskalender — én linje pr. dag, kronologisk fra i dag og 12 mdr. frem */
+/* Mærkedagskalender — én linje pr. dag, kronologisk fra i dag og 12 mdr. frem.
+   Runde fødselsdage (fylder 40, 50, 60 …) og bryllupsdage på 5-10-15-…-50 år vises med fed. */
 const mcal = [];
 CONFIG.members.forEach(p=>{
-  if (p.foedselsdag) mcal.push({ navn:p.navn, type:"Fødselsdag",
-    src:p.foedselsdag, occ:nextOcc(p.foedselsdag),
-    calc:`fylder ${nextOcc(p.foedselsdag).getFullYear() - parse(p.foedselsdag).getFullYear()} år` });
-  if (p.bryllupsdag) mcal.push({ navn:p.navn, type:"Bryllupsdag",
-    src:p.bryllupsdag, occ:nextOcc(p.bryllupsdag),
-    calc:`${nextOcc(p.bryllupsdag).getFullYear() - parse(p.bryllupsdag).getFullYear()} år` });
+  if (p.foedselsdag){
+    const turns = nextOcc(p.foedselsdag).getFullYear() - parse(p.foedselsdag).getFullYear();
+    mcal.push({ navn:p.navn, type:"Fødselsdag", src:p.foedselsdag, occ:nextOcc(p.foedselsdag),
+      calc:`fylder ${turns} år`, milestone: turns % 10 === 0 });
+  }
+  if (p.bryllupsdag){
+    const yrs = nextOcc(p.bryllupsdag).getFullYear() - parse(p.bryllupsdag).getFullYear();
+    mcal.push({ navn:p.navn, type:"Bryllupsdag", src:p.bryllupsdag, occ:nextOcc(p.bryllupsdag),
+      calc:`${yrs} år`, milestone: yrs % 5 === 0 && yrs >= 5 && yrs <= 50 });
+  }
 });
 mcal.sort((a,b)=>a.occ-b.occ);
 document.getElementById("mcalList").innerHTML = mcal.length ? mcal.map(e=>{
   const days = daysTo(e.src);
-  return `<div class="mcal-row ${days<=30?'soon':''}">
+  return `<div class="mcal-row ${days<=30?'soon':''} ${e.milestone?'milestone':''}">
     <div class="cd">${e.occ.getDate()}. ${MD[e.occ.getMonth()].slice(0,3)} ${e.occ.getFullYear()}</div>
     <div class="cn">${e.navn}</div>
     <div class="ct">${e.type} · ${e.calc}</div>
