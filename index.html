@@ -98,6 +98,8 @@ h1{font-family:var(--disp);font-weight:400;font-size:clamp(44px,8vw,104px);lette
 h1 .x{color:var(--brass)}
 .sub{max-width:520px;color:var(--muted);font-size:15px}
 .hero-hint{margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#5c5648}
+.hint-mobile{display:none}
+@media(max-width:700px){.hint-desktop{display:none}.hint-mobile{display:inline}}
 
 /* THE TABLE — 3D ring of meeting cards */
 .table-stage{
@@ -138,9 +140,24 @@ h1 .x{color:var(--brass)}
   font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
   padding:4px 10px;border-radius:20px;white-space:nowrap;
 }
-@media(max-width:640px){
-  .mcard{width:160px;height:230px;margin:-115px 0 0 -80px;padding:14px}
-  .mcard h3{font-size:16px}
+/* Mobil: bordet bliver en swipebar kortrække i stedet for 3D-ring */
+@media(max-width:700px){
+  .table-stage{height:auto;perspective:none;max-width:100%;touch-action:auto}
+  .table-ring{
+    position:static;transform:none !important;
+    display:flex;gap:14px;align-items:stretch;
+    overflow-x:auto;padding:30px 8vw 18px;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .table-ring::-webkit-scrollbar{display:none}
+  .mcard{
+    position:relative;left:auto;top:auto;margin:0;
+    flex:0 0 200px;height:270px;
+    transform:none !important;
+    scroll-snap-align:center;
+  }
 }
 
 /* sections */
@@ -329,7 +346,7 @@ footer .built{font-family:var(--mono);font-size:10px;letter-spacing:.14em}
   <div class="table-stage" id="stage">
     <div class="table-ring" id="ring"></div>
   </div>
-  <div class="hero-hint">Træk i bordet for at dreje det · klik på et kort</div>
+  <div class="hero-hint"><span class="hint-desktop">Træk i bordet for at dreje det · klik på et kort</span><span class="hint-mobile">Swipe gennem sæsonens møder</span></div>
 </header>
 
 <!-- NÆSTE MØDE -->
@@ -532,7 +549,6 @@ meetings.forEach((m,i)=>{
   const c = document.createElement("a");
   c.className = "mcard" + (i===nextIdx ? " next" : "");
   c.href = "#saeson";
-  c.style.transform = `rotateY(${i*(360/N)}deg) translateZ(${R()}px)`;
   c.innerHTML = `
     ${i===nextIdx ? '<span class="tag">Næste møde</span>' : ''}
     <div><div class="no">MØDE ${String(i+1).padStart(2,"0")} / ${N}</div>
@@ -545,18 +561,35 @@ meetings.forEach((m,i)=>{
 let angle = -(360/N)*Math.max(nextIdx,0);   // start med næste møde forrest
 let vel = 0, dragging = false, lastX = 0, auto = true;
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const mqMobile = matchMedia("(max-width:700px)");
+
+/* Læg kortene: 3D-ring på desktop, flad swipe-række på mobil */
+function layoutCards(){
+  const mobile = mqMobile.matches;
+  document.querySelectorAll(".mcard").forEach((c,i)=>{
+    c.style.transform = mobile ? "" : `rotateY(${i*(360/N)}deg) translateZ(${R()}px)`;
+  });
+  if(mobile){
+    ring.style.transform = "";
+    const nc = document.querySelector(".mcard.next");
+    if(nc) ring.scrollLeft = nc.offsetLeft - (ring.clientWidth - nc.offsetWidth)/2;
+  }
+}
+layoutCards();
 
 function tick(){
-  if(!dragging){
-    if(auto && !reduced) angle += 0.05;
-    angle += vel; vel *= 0.95;
+  if(!mqMobile.matches){
+    if(!dragging){
+      if(auto && !reduced) angle += 0.05;
+      angle += vel; vel *= 0.95;
+    }
+    ring.style.transform = `rotateX(-9deg) rotateY(${angle}deg)`;
   }
-  ring.style.transform = `rotateX(-9deg) rotateY(${angle}deg)`;
   requestAnimationFrame(tick);
 }
 tick();
 
-const down = x => { dragging = true; auto = false; lastX = x; };
+const down = x => { if(mqMobile.matches) return; dragging = true; auto = false; lastX = x; };
 const move = x => { if(!dragging) return; const dx = x - lastX; lastX = x; angle += dx*0.35; vel = dx*0.12; };
 const up = () => { dragging = false; setTimeout(()=>auto=true, 6000); };
 
@@ -724,12 +757,8 @@ navLinks.querySelectorAll("a").forEach(a=>a.addEventListener("click", ()=>{
   burger.setAttribute("aria-expanded","false");
 }));
 
-/* genberegn bordets radius ved resize / rotation af telefonen */
-addEventListener("resize", ()=>{
-  document.querySelectorAll(".mcard").forEach((c,i)=>{
-    c.style.transform = `rotateY(${i*(360/N)}deg) translateZ(${R()}px)`;
-  });
-});
+/* genberegn layout ved resize / rotation af telefonen */
+addEventListener("resize", layoutCards);
 
 const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add("in"); }),{threshold:.12});
 document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
