@@ -214,7 +214,7 @@ h2{font-family:var(--disp);font-weight:400;font-size:clamp(28px,4vw,44px);letter
 .roles-note .who{font-family:var(--mono);font-size:11px;color:var(--brass);letter-spacing:.08em}
 .chairs{margin-top:26px;border:1px solid var(--line);border-radius:var(--radius);padding:22px 26px;background:var(--panel)}
 .chairs-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
-.chairs-list{display:flex;flex-wrap:wrap;gap:0;align-items:baseline}
+.chairs-list{display:flex;flex-wrap:wrap;gap:12px 0;align-items:baseline}
 .chair-item{display:flex;align-items:baseline;gap:10px;padding-right:22px;margin-right:22px;border-right:1px solid var(--line)}
 .chair-item:last-child{border-right:none;margin-right:0;padding-right:0}
 .chair-item .yr{font-family:var(--mono);font-size:11px;color:var(--brass);letter-spacing:.06em}
@@ -439,29 +439,49 @@ const CONFIG = {
       foedselsdag:"1969-02-10", bryllupsdag:"", rtSiden:"Juni 2002",
       andet:["Optiker siden august 1989"],
       boern:[{navn:"Amalie",aar:1993},{navn:"Louise",aar:1996}] },
-    { navn:"Jes Frydendall", rolle:"Bestyrelse" },
-    { navn:"Bo Holm" },
-    { navn:"Danny Fogel" },
-    { navn:"Henrik Holtegaard" },
-    { navn:"Jacob Schlundt" },
-    { navn:"Kim Kehlet Johansen" },
-    { navn:"Kristian Præstgaard" },
-    { navn:"Michael Steffens" },
-    { navn:"Nis Juhl Lorenzen" },
-    { navn:"Peter Gramkow" },
-    { navn:"Steen Bock" },
-    { navn:"Søren Boye Nielsen" },
-    { navn:"Tage Flemming Holck" },
-    { navn:"Torben Spuur Jensen" }
+    { navn:"Jes Frydendall", rolle:"Bestyrelse",
+      foedselsdag:"1966-11-12", bryllupsdag:"1998-09-05" },
+    { navn:"Bo Holm",
+      foedselsdag:"1966-03-22", bryllupsdag:"" },
+    { navn:"Danny Fogel",
+      foedselsdag:"1975-04-03", bryllupsdag:"" },
+    { navn:"Henrik Holtegaard",
+      foedselsdag:"1965-02-20", bryllupsdag:"1997-06-28" },
+    { navn:"Jacob Schlundt",
+      foedselsdag:"1970-04-11", bryllupsdag:"" },
+    { navn:"Kim Kehlet Johansen",
+      foedselsdag:"1963-05-19", bryllupsdag:"2014-09-20" },
+    { navn:"Kristian Præstgaard",
+      foedselsdag:"1967-06-02", bryllupsdag:"2001-08-11" },
+    { navn:"Michael Steffens",
+      foedselsdag:"1959-04-11", bryllupsdag:"" },
+    { navn:"Nis Juhl Lorenzen",
+      foedselsdag:"1964-11-13", bryllupsdag:"2001-06-03" },
+    { navn:"Peter Gramkow",
+      foedselsdag:"1967-01-28", bryllupsdag:"1999-05-15" },
+    { navn:"Steen Bock",
+      foedselsdag:"1962-07-01", bryllupsdag:"1996-08-24" },
+    { navn:"Søren Boye Nielsen",
+      foedselsdag:"1961-09-20", bryllupsdag:"" },
+    { navn:"Tage Flemming Holck",
+      foedselsdag:"1962-03-31", bryllupsdag:"" },
+    { navn:"Torben Spuur Jensen",
+      foedselsdag:"1963-12-12", bryllupsdag:"2013-08-24" }
   ],
 
-  /* Tidligere formænd — nyeste først. XYZ udskiftes med rigtige navne. */
+  /* Tidligere formænd — nyeste først */
   formaend: [
     { navn:"Bo Holm", periode:"2025–26" },
-    { navn:"XYZ1", periode:"2023–24" },
-    { navn:"XYZ2", periode:"2021–22" },
-    { navn:"XYZ3", periode:"2019–20" },
-    { navn:"XYZ4", periode:"2017–18" }
+    { navn:"Kristian Præstgaard", periode:"2023–24" },
+    { navn:"Danny Fogel", periode:"2021–22" },
+    { navn:"Nis Juhl Lorenzen", periode:"2019–20" },
+    { navn:"Michael Steffens", periode:"2017–18" },
+    { navn:"Torben Spuur Jensen", periode:"2015–16" },
+    { navn:"Peter Gramkow", periode:"2012–14" },
+    { navn:"Thomas Friisnæs", periode:"2011–12" },
+    { navn:"Anders Kreiner", periode:"2009–10" },
+    { navn:"Søren Boye Nielsen", periode:"2007–08" },
+    { navn:"Kim Kehlet Johansen", periode:"2005–06" }
   ],
 
   /* Rullende arrangementer — de 11 nyeste vises, ældre falder automatisk ud.
